@@ -22,9 +22,9 @@ pwm_blue = GPIO.PWM(blue, 50)
 
 class LED_PWM:
     def __init__(self):
-        self.red_int = 100
-        self.green_int = 100
-        self.blue_int = 100
+        self.red_int = 0
+        self.green_int = 0
+        self.blue_int = 0
         self.status = 0
 
     def turnOn(self):
