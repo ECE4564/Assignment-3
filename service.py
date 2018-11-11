@@ -26,7 +26,7 @@ def upload_LED():
         return 'Invalid request, no file included.'
 
     # Saving file
-    bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(filename)))
+    bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     print("Running " + filename + "...")
     subprocess.Popen(["bash", filename])
