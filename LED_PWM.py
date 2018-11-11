@@ -41,7 +41,7 @@ class LED_PWM:
         pwm_blue.start(0)
         self.status = 0
 
-    def intensity(self, color, intensity):
+    def changeIntensity(self, color, intensity):
         # Determine which color to change
         if color == 'red':
             self.red_int = intensity
