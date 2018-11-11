@@ -46,7 +46,7 @@ def turnOff():
 def intensity():
     try:
         content = request.json
-        print(content.color)
+        print(content['color'])
         color = content.color
         intensity = content.intensity
     except:
