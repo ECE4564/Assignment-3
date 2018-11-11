@@ -1,98 +1,54 @@
-#!flask/bin/python
-from flask import Flask, request, jsonify, json
-#import LED_PWM
+import RPi.GPIO as GPIO
+import time
 
-import logging
-import socket
-import sys
-import signal
-from time import sleep
+red = 16
+green = 20
+blue = 21
 
-from zeroconf import ServiceInfo, Zeroconf 
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.cleanup()
+GPIO.setup(red,GPIO.OUT)
+GPIO.setup(green,GPIO.OUT)
+GPIO.setup(blue,GPIO.OUT)
 
-app = Flask(__name__)
+ # 50Hz PWM Frequency  
+pwm_red = GPIO.PWM(red, 50)
+pwm_green = GPIO.PWM(green, 50)
+pwm_blue = GPIO.PWM(blue, 50)
 
-def signal_handler(sig, frame):
-    print("Unregistering...")
-    zeroconf.unregister_service(info)
-    zeroconf.close()
-    sys.exit(0)
+ # Full Brightness, 100% Duty Cycle  
+ 
 
-@app.route('/LED/hello', methods=['GET'])
-def hello():
-    #led.turnOn()
+class LED_PWM:
+    def __init__(self):
+        self.red_int = 100
+        self.green_int = 100
+        self.blue_int = 100
+        self.status = 0
 
-    # Return message and code
-    return "Hello world"
+    def turnOn(self):
+        # Turn on LED with saved intensity values
+        pwm_red.start(self.red_int)
+        pwm_green.start(self.green_int)
+        pwm_blue.start(self.blue_int)
+        self.status = 1
 
+    def turnOff(self):
+        # Turn off every LED
+        pwm_red.start(0)
+        pwm_green.start(0)
+        pwm_blue.start(0)
+        self.status = 0
 
-@app.route('/LED/on', methods=['POST'])
-def turnOn():
-    led.turnOn()
-
-    # Return message and code
-    return "LED on"
-
-
-@app.route('/LED/off', methods=['POST'])
-def turnOff():
-    led.turnOff()
-
-    # Return message and code
-    return "LED off"
-
-
-@app.route('/LED', methods=['POST'])
-def intensity():
-    try:
-        content = request.json
-        color = content.color
-        intensity = content.intensity
-    except:
-        return 'Invalid request, include intenisty data.'
-
-    # Change the intensity of specified channel
-    led.changeIntensity(color, intensity)
-
-    # Return message and code
-    return "Successfully set " + color + "'s intensity to " + str(intensity)
-
-
-@app.route('/LED/info', methods=['GET'])
-def info():
-    led_vals = {}
-
-    # Get all of the relevant information about LED
-    led_vals["red"] = led.red_int
-    led_vals["green"] = led.green_int
-    led_vals["blue"] = led.blue_int
-    led_vals["status"] = led.status
-
-    return jsonify({'Content': led_vals})
-
-
-if __name__ == '__main__':
-    #led = LED_PWM()
-    hostname = socket.gethostname()  
-    IPAddr = socket.gethostbyname(hostname)
-    logging.basicConfig(level=logging.DEBUG)
-    if len(sys.argv) > 1:
-        assert sys.argv[1:] == ['--debug']
-        logging.getLogger('zeroconf').setLevel(logging.DEBUG)
-
-    desc = {'path': '/~paulsm/'}
-
-    info = ServiceInfo("_http._tcp.local.",
-                       "LED._http._tcp.local.",
-                       socket.inet_aton(str(IPAddr)), 80, 0, 0,
-                       desc, "ash-2.local.")
-
-    zeroconf = Zeroconf()
-    print("Registration of a service, press Ctrl-C to exit...")
-    zeroconf.register_service(info)
-    print("Ready for API calls")
-
-    # Create clean exit signal
-    signal.signal(signal.SIGINT, signal_handler)
-        
-    app.run(host= '0.0.0.0')
+    def intensity(self, color, intensity):
+        # Determine which color to change
+        if color == 'red':
+            self.red_int = intensity
+            pwm_red.start(self.red_int)
+        elif color == 'green':
+            self.green_int = intensity
+            pwm_green.start(self.green_int)
+        elif color == 'blue':
+            self.blue_int = intensity
+            pwm_blue.start(self.blue_int)
