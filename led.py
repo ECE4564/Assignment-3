@@ -1,8 +1,29 @@
 #!flask/bin/python
 from flask import Flask, request, jsonify, json
-import LED_PWM
+#import LED_PWM
+
+import logging
+import socket
+import sys
+import signal
+from time import sleep
+
+from zeroconf import ServiceInfo, Zeroconf 
 
 app = Flask(__name__)
+
+def signal_handler(sig, frame):
+    print("Unregistering...")
+    zeroconf.unregister_service(info)
+    zeroconf.close()
+    sys.exit(0)
+
+@app.route('/LED/hello', methods=['GET'])
+def hello():
+    #led.turnOn()
+
+    # Return message and code
+    return "Hello world"
 
 
 @app.route('/LED/on', methods=['POST'])
@@ -51,5 +72,27 @@ def info():
 
 
 if __name__ == '__main__':
-    led = LED_PWM()
-    app.run(debug=True)
+    #led = LED_PWM()
+    hostname = socket.gethostname()  
+    IPAddr = socket.gethostbyname(hostname)
+    logging.basicConfig(level=logging.DEBUG)
+    if len(sys.argv) > 1:
+        assert sys.argv[1:] == ['--debug']
+        logging.getLogger('zeroconf').setLevel(logging.DEBUG)
+
+    desc = {'path': '/~paulsm/'}
+
+    info = ServiceInfo("_http._tcp.local.",
+                       "LED._http._tcp.local.",
+                       socket.inet_aton(str(IPAddr)), 80, 0, 0,
+                       desc, "ash-2.local.")
+
+    zeroconf = Zeroconf()
+    print("Registration of a service, press Ctrl-C to exit...")
+    zeroconf.register_service(info)
+    print("Ready for API calls")
+
+    # Create clean exit signal
+    signal.signal(signal.SIGINT, signal_handler)
+        
+    app.run(host= '0.0.0.0')
