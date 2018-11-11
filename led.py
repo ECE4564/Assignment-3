@@ -72,7 +72,7 @@ def info():
 
 
 if __name__ == '__main__':
-    led = LED_PWM()
+    led = LED_PWM.LED_PWM()
     hostname = socket.gethostname()  
     IPAddr = socket.gethostbyname(hostname)
     logging.basicConfig(level=logging.DEBUG)
