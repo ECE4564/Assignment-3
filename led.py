@@ -46,9 +46,8 @@ def turnOff():
 def intensity():
     try:
         content = request.json
-        print(content['color'])
-        color = content.color
-        intensity = content.intensity
+        color = content['color']
+        intensity = content['intensity']
     except:
         return 'Invalid request, include intenisty data.'
 
