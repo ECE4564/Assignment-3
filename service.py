@@ -24,6 +24,8 @@ def upload_LED():
         filename = bashfile.filename
     except:
         return 'Invalid request, no file included.'
+    
+    os.system("ls")
 
     # Saving file
     bashfile.save(filename)
