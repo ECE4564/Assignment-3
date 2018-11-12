@@ -29,7 +29,7 @@ def add():
         return 'Error: No data for Name'
     else:
         res = db.insert(content)
-        return res
+        return jsonify(res)
 
 
 # DELETE
@@ -42,14 +42,14 @@ def delete():
         return 'Error: No data for Name'
     else:
         res = db.remove(content)
-        return res
+        return jsonify(res)
 
 
 # LIST
 @app.route('/book/list', methods=['GET'])
 def list_all():
     # TODO: Return message?
-    return json.dumps(db.list_all(1))
+    return jsonify(db.list_all(1))
 
 
 # BUY
@@ -63,8 +63,8 @@ def buy():
     elif content['Count'] is None:
         return 'Error: No data for Count'
     else:
-        res = db.change_stock(content['Author'], int(content['Count']))
-        return res
+        res = db.change_stock({'Name': content['Name']}, int(content['Count']))
+        return jsonify(res)
 
 
 # SELL
@@ -79,18 +79,22 @@ def sell():
         return 'Error: No data for Count'
     else:
         change = int(content['Count'])
-        res = db.change_stock(content['Author'], -change)
-        return res
+        res = db.change_stock({'Author': content['Author']}, -change)
+        return jsonify(res)
 
 
-@app.route('/book/count?Action=COUNT&<Name>&<Author>', methods=['GET'])
-def count(Name, Author):
-    res = db.get_count(Name)
-    return res
+@app.route('/book/count', methods=['GET'])
+def count():
+    Name = request.args.get('Name')
+    Author = request.args.get('Author')
+    res = db.get_count({'Name': Name})
+    print(str(res))
+    return jsonify(res)
 
 
 if __name__ == '__main__':
     db = StorageDB.MongoDB()
+    db.clear_db()
     hostname = socket.gethostname()
     IPAddr = socket.gethostbyname(hostname + ".local")
     logging.basicConfig(level=logging.DEBUG)

@@ -2,6 +2,7 @@
 # MOST UP TO DATE VERSION
 
 import pymongo
+import pprint
 
 
 class MongoDB:
@@ -47,8 +48,11 @@ class MongoDB:
     def change_stock(self, book, stock_change):
         # self.collection.update_one(title, {'$set': {'Stock': new_stock}})
         try:
+            print(str(book))
             found_book = self.collection.find_one(book)
+            print(str(found_book))
             old_stock = found_book['stock']
+            print(str(old_stock))
         except:
             return {'Msg': 'Error: Book doesn\'t exist. Please add book first'}
         if stock_change is None:
