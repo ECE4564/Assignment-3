@@ -1,9 +1,22 @@
 from flask import Flask, request, jsonify
 import json
 import MongoDB
+import logging
+import socket
+import sys
+import signal
+
+from zeroconf import ServiceInfo, Zeroconf 
 
 # Flask
 app = Flask(__name__)
+
+
+def signal_handler(sig, frame):
+    print("Unregistering...")
+    zeroconf.unregister_service(info)
+    zeroconf.close()
+    sys.exit(0)
 
 
 # ADD
@@ -78,3 +91,26 @@ def count(Name, Author):
 
 if __name__ == '__main__':
     db = MongoDB.MongoDB()
+    hostname = socket.gethostname()
+    IPAddr = socket.gethostbyname(hostname + ".local")
+    logging.basicConfig(level=logging.DEBUG)
+    if len(sys.argv) > 1:
+        assert sys.argv[1:] == ['--debug']
+        logging.getLogger('zeroconf').setLevel(logging.DEBUG)
+
+    desc = {'path': '/~paulsm/'}
+
+    info = ServiceInfo("_http._tcp.local.",
+                       "STORAGE._http._tcp.local.",
+                       socket.inet_aton(str(IPAddr)), 5000, 0, 0,
+                       desc, "ash-2.local.")
+
+    zeroconf = Zeroconf()
+    print("Registration of a service, press Ctrl-C to exit...")
+    zeroconf.register_service(info)
+    print("Ready for API calls")
+
+    # Create clean exit signal
+    signal.signal(signal.SIGINT, signal_handler)
+
+    app.run(host='0.0.0.0')
