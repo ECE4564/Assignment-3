@@ -52,8 +52,8 @@ def upload_LED():
 
     print("Running " + filename + "...")
     # Need to change IP to zeroconf obtained IP
-    print(LED_IP + '\n')
-    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), LED_IP])
+    print(str(LED_IP) + '\n')
+    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), str(LED_IP)])
 
     # Return message and code
     return "File successfully uploaded."
