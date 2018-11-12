@@ -29,8 +29,6 @@ class MyListener (object):
             LED_IP = socket.inet_ntoa(cast(bytes, info.address))
         elif(Name == "STORAGE.http._tcp.local."):
             STORE_IP = socket.inet_ntoa(cast(bytes, info.address))
-            if LED_IP != "":
-                zeroconf.close()
 
 app = Flask(__name__)
 
@@ -40,9 +38,15 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 @app.route('/add_user', methods=['POST'])
 def add():
+    try:
+        userinfo = request.json
+        username = userinfo['username']
+        password = userinfo['password']
+    except:
+        return 'Invalid request, missing information.'
 
     # Return message and code
-    return "LED on"
+    return "Successfully added " + username + " to the database."
 
 
 @app.route('/upload/led', methods=['POST'])
@@ -92,7 +96,7 @@ def upload_STORE():
 
 
 if __name__ == '__main__':
-    #auth = AuthDB()
+    #auth = AuthDB.AuthDB()
     zeroconf = Zeroconf()
     listener = MyListener()
     browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
