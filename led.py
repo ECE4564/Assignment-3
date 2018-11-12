@@ -81,10 +81,11 @@ if __name__ == '__main__':
         logging.getLogger('zeroconf').setLevel(logging.DEBUG)
 
     desc = {'path': '/~paulsm/'}
+    print('IP: ' + IPAddr)
 
     info = ServiceInfo("_http._tcp.local.",
                        "LED._http._tcp.local.",
-                       socket.inet_aton(str(IPAddr)), 80, 0, 0,
+                       socket.inet_aton(str(IPAddr)), 5000, 0, 0,
                        desc, "ash-2.local.")
 
     zeroconf = Zeroconf()
