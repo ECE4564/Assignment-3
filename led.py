@@ -17,14 +17,7 @@ def signal_handler(sig, frame):
     zeroconf.unregister_service(info)
     zeroconf.close()
     sys.exit(0)
-
-@app.route('/LED/hello', methods=['GET'])
-def hello():
-    #led.turnOn()
-
-    # Return message and code
-    return "Hello world"
-
+    
 
 @app.route('/LED/on', methods=['POST'])
 def turnOn():
