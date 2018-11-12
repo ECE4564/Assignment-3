@@ -64,13 +64,12 @@ def upload_LED():
         if found:
             bashfile = request.files['file']
             filename = bashfile.filename
+            # Saving file
+            bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         else:
             return 'User not found.'
     except:
         return 'Invalid request, no file included.'
-
-    # Saving file
-    bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     print("Running " + filename + " using IP: " + LED_IP + "..." )
     subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), str(LED_IP)])
@@ -92,6 +91,8 @@ def upload_STORE():
         if found:
             bashfile = request.files['file']
             filename = bashfile.filename
+            # Saving file
+            bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         else:
             return 'User not found.'
 
