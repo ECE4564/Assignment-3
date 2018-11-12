@@ -18,6 +18,10 @@ class AuthDB:
 
     def find_user(self, data):
         try:
-            return str(self.collection.find_one(data))
+            res = self.collection.find_one(data)
+            if res['username'] == data['username'] and res['password'] == data['password']:
+                return True
+            else:
+                return False
         except:
             return 'Exception caught when attempting to find user'

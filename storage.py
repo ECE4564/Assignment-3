@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify, json
 import subprocess
 import os
+import AuthDB
 
 
 app = Flask(__name__)
@@ -56,5 +57,4 @@ def upload_STORE():
 
 
 if __name__ == '__main__':
-    #auth = AuthDB()
     app.run(host= '0.0.0.0', port=5002)

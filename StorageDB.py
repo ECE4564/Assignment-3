@@ -6,7 +6,7 @@ import socket
 import sys
 import signal
 
-from zeroconf import ServiceInfo, Zeroconf 
+from zeroconf import ServiceInfo, Zeroconf
 
 # Flask
 app = Flask(__name__)
