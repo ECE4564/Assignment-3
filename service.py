@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, json
 import subprocess
 import os
-#import AuthDB
+import AuthDB
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 from time import sleep
 import logging
@@ -42,6 +42,8 @@ def add():
         userinfo = request.json
         username = userinfo['username']
         password = userinfo['password']
+        res = auth_db.insert(userinfo)
+        return res
     except:
         return 'Invalid request, missing information.'
 
@@ -57,9 +59,13 @@ def upload_LED():
     
     try:
         auth = request.authorization
-        print('User: ' + auth.username + ' Password: ' + auth.password)
-        bashfile = request.files['file']
-        filename = bashfile.filename
+        #print('User: ' + auth.username + ' Password: ' + auth.password)
+        found = auth_db.find_user(auth)
+        if found:
+            bashfile = request.files['file']
+            filename = bashfile.filename
+        else:
+            return 'User not found.'
     except:
         return 'Invalid request, no file included.'
 
@@ -80,10 +86,14 @@ def upload_STORE():
     global STORE_IP
     
     try:
-        bashfile = request.files['file']
-        filename = bashfile.filename
-    except:
-        return 'Invalid request, no file included.'
+        auth = request.authorization
+        #print('User: ' + auth.username + ' Password: ' + auth.password)
+        found = auth_db.find_user(auth)
+        if found:
+            bashfile = request.files['file']
+            filename = bashfile.filename
+        else:
+            return 'User not found.'
 
     # Saving file
     bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -96,7 +106,7 @@ def upload_STORE():
 
 
 if __name__ == '__main__':
-    #auth = AuthDB.AuthDB()
+    auth_db = AuthDB.AuthDB()
     zeroconf = Zeroconf()
     listener = MyListener()
     browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
