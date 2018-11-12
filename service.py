@@ -29,7 +29,7 @@ def upload_LED():
     bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     print("Running " + filename + "...")
-    subprocess.Popen(["bash", filename, "192.168.1.36"])
+    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), "192.168.1.36"])
 
     # Return message and code
     return "File successfully uploaded."
