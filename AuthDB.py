@@ -25,3 +25,7 @@ class AuthDB:
                 return False
         except:
             return 'Exception caught when attempting to find user'
+
+    # clears the database, this can be used to remove duplicate objects in the database when testing
+    def clear_db(self):
+        self.db.drop_collection(self.collection)
