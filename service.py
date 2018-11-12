@@ -23,6 +23,7 @@ class MyListener (object):
         print(Name)
         if(Name == "LED._http._tcp.local."):
             LED_IP = socket.inet_ntoa(cast(bytes, info.address))
+            print(LED_IP + '\n')
             zeroconf.close()
 
 app = Flask(__name__)
