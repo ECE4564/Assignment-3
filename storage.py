@@ -1,72 +1,60 @@
-import StorageDB
-from flask import Flask, request, jsonify
+#!flask/bin/python
+from flask import Flask, request, jsonify, json
 import subprocess
 import os
-import json
 
-# Flask
+
 app = Flask(__name__)
 
+# Upload directory
+app.config['UPLOAD_FOLDER'] = 'uploads/'
 
-# ADD
-@app.route('/book/add', methods=['POST'])
+
+@app.route('/add_user', methods=['POST'])
 def add():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    else:
-        db.insert(content)
+
+    # Return message and code
+    return "LED on"
 
 
-# DELETE
-@app.route('/book/delete', methods=['POST'])
-def delete():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    else:
-        db.remove(content)
+@app.route('/upload/led', methods=['POST'])
+def upload_LED():
+    try:
+        bashfile = request.files['file']
+        filename = bashfile.filename
+    except:
+        return 'Invalid request, no file included.'
+
+    # Saving file
+    bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    print("Running " + filename + "...")
+    # Need to change IP to zeroconf obtained IP
+    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), "192.168.1.36"])
+
+    # Return message and code
+    return "LED file successfully uploaded."
 
 
-# LIST
-@app.route('/book/list', methods=['POST'])
-def list_all():
-    # TODO: Return message?
-    return json.dumps(db.list_all(1))
+@app.route('/upload/storage', methods=['POST'])
+def upload_STORE():
+    try:
+        bashfile = request.files['file']
+        filename = bashfile.filename
+    except:
+        return 'Invalid request, no file included.'
 
+    # Saving file
+    bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-# BUY
-@app.route('/book/buy', methods=['POST'])
-def buy():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    elif content['Count'] is None:
-        return 'Error: No data for Count'
-    else:
-        db.change_stock(content['Author'], int(content['Count']))
+    print("Running " + filename + "...")
+    # Need to change IP to zeroconf obtained IP
+    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), "192.168.1.36"])
 
-
-# SELL
-@app.route('/book/sell', methods=['POST'])
-def sell():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    elif content['Count'] is None:
-        return 'Error: No data for Count'
-    else:
-        change = int(content['Count'])
-        db.change_stock(content['Author'], -change)
+    # Return message and code
+    return "Storage file successfully uploaded."
 
 
 if __name__ == '__main__':
-    db = StorageDB.MongoDB()
+    #auth = AuthDB()
+    app.run(host= '0.0.0.0', port=5002)
