@@ -29,6 +29,7 @@ class MyListener (object):
         if(Name == "LED._http._tcp.local."):
             LED_IP = socket.inet_ntoa(cast(bytes, info.address))
         elif(Name == "STORAGE.http._tcp.local."):
+            print('In Storage IP')
             STORE_IP = socket.inet_ntoa(cast(bytes, info.address))
 
 app = Flask(__name__)
