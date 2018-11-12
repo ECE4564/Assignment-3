@@ -33,7 +33,7 @@ def upload_LED():
     subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), "192.168.1.36"])
 
     # Return message and code
-    return "File successfully uploaded."
+    return "LED file successfully uploaded."
 
 
 @app.route('/upload/storage', methods=['POST'])
@@ -52,7 +52,7 @@ def upload_STORE():
     subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), "192.168.1.36"])
 
     # Return message and code
-    return "File successfully uploaded."
+    return "Storage file successfully uploaded."
 
 
 if __name__ == '__main__':
