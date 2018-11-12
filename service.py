@@ -52,9 +52,8 @@ def upload_LED():
     global STORE_IP
     
     try:
-        username = request.json.get('username')
-        password = request.json.get('password')
-        print('User: ' + username + ' Password: ' + password)
+        auth = request.authorization
+        print('User: ' + auth.username + ' Password: ' + auth.password)
         bashfile = request.files['file']
         filename = bashfile.filename
     except:
