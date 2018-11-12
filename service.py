@@ -41,6 +41,7 @@ def add():
 
 @app.route('/upload/led', methods=['POST'])
 def upload_LED():
+    global LED_IP
     try:
         bashfile = request.files['file']
         filename = bashfile.filename
