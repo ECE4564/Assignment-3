@@ -15,6 +15,7 @@ class MyListener (object):
     def remove_service(self, zeroconf, type, name):
         print("Service%sremoved" % (name,))
     def add_service(self, zeroconf, type, name):
+        global LED_IP
         info = zeroconf.get_service_info(type, name)
         try:
             Name = info.name
