@@ -61,6 +61,7 @@ def upload_LED():
         auth = request.authorization
         #print('User: ' + auth.username + ' Password: ' + auth.password)
         found = auth_db.find_user(auth)
+        print('Found: ' + found + ' User: ' + auth.username + ' Password: ' + auth.password)
         if found:
             bashfile = request.files['file']
             filename = bashfile.filename
@@ -109,6 +110,7 @@ def upload_STORE():
 
 if __name__ == '__main__':
     auth_db = AuthDB.AuthDB()
+    auth_db.clear_db()
     zeroconf = Zeroconf()
     listener = MyListener()
     browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
