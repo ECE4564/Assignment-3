@@ -1,116 +1,87 @@
-from flask import Flask, request, jsonify
-import json
-import MongoDB
-import logging
-import socket
-import sys
-import signal
+# MongoDB.py - Encapsulates MongoDB related functions for ECE 4564 Assignment 2
+# MOST UP TO DATE VERSION
 
-from zeroconf import ServiceInfo, Zeroconf
-
-# Flask
-app = Flask(__name__)
+import pymongo
 
 
-def signal_handler(sig, frame):
-    print("Unregistering...")
-    zeroconf.unregister_service(info)
-    zeroconf.close()
-    sys.exit(0)
+class MongoDB:
 
+    def __init__(self):
+        # open default port and host (local client)
+        self.client = pymongo.MongoClient()
+        # generate book database
+        self.db = self.client.db  # lazy initialisation
+        self.collection = self.db.collection
 
-# ADD
-@app.route('/book/add', methods=['POST'])
-def add():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    else:
-        res = db.insert(content)
-        return res
+    # inserts a new book into the database
+    # requires full information in JSON format, automatically set stock value of 0
+    def insert(self, new_book):
+        # check if the book is already in the database
+        try:
+            new_book['stock'] = 0
+            post_id = self.collection.insert_one(new_book).inserted_id
+        except:
+            return {'Msg': 'Error: Unable to add. Book already exists'}
+        return {'Msg': 'OK: Successfully inserted. Book id ' + str(post_id)}
 
+    # query the database to find a book, search by title, author, or both
+    def find(self, query):
+        return str(self.collection.find_one(query))
 
-# DELETE
-@app.route('/book/delete', methods=['DELETE'])
-def delete():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    else:
-        res = db.remove(content)
-        return res
+    # list all books in the database, returns a list object containing JSON elements
+    def list_all(self, list):
+        # returns all posts in the db
+        cursor = self.collection.find({})
+        all_books = []
+        for document in cursor:
+            all_books.append(document)
+        if list == 1:
+            return {"Msg": "OK. Getting " + str(len(all_books)) + " books information", "Books": str(all_books)}
+        else:
+            return all_books
 
+    # modify the stock of a given book
+    # can search with title, author, or both
+    # for a BUY request, stock_change should be positive
+    # for a SELL request, stock_change should be negative
+    def change_stock(self, book, stock_change):
+        # self.collection.update_one(title, {'$set': {'Stock': new_stock}})
+        try:
+            found_book = self.collection.find_one(book)
+            old_stock = found_book['stock']
+        except:
+            return {'Msg': 'Error: Book doesn\'t exist. Please add book first'}
+        if stock_change is None:
+            return {'Msg': 'Error: No value was provided'}
+        else:
+            if old_stock + int(stock_change) > 0:  # ensure stock does not go below zero
+                self.collection.update_one(book, {'$set': {'stock': old_stock + int(stock_change)}})
+                return {'Msg': 'OK: ' + str(found_book) + 'Stock: ' + str(old_stock + int(stock_change))}
+            else:
+                return {'Msg': 'Error: Stock is not enough'}
 
-# LIST
-@app.route('/book/list', methods=['GET'])
-def list_all():
-    # TODO: Return message?
-    return json.dumps(db.list_all(1))
+    # remove a book from the database
+    # returns a boolean if wanted
+    def remove(self, book):
+        result = self.collection.delete_one(book)
+        if result.deleted_count == 1:
+            return {'Msg': 'OK: Successfully deleted.'}
+        else:
+            return {'Msg': 'Book not found in database'}
 
+    # clears the database, this can be used to remove duplicate objects in the database when testing
+    def clear_db(self):
+        self.db.drop_collection(self.collection)
 
-# BUY
-@app.route('/book/buy', methods=['PUT'])
-def buy():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    elif content['Count'] is None:
-        return 'Error: No data for Count'
-    else:
-        res = db.change_stock(content['Author'], int(content['Count']))
-        return res
+    # returns the current stock of a book
+    def get_stock(self, title):
+        found_book = self.collection.find_one(title)
+        return str(found_book['stock'])
 
-
-# SELL
-@app.route('/book/sell', methods=['PUT'])
-def sell():
-    content = request.json
-    if content['Author'] is None:
-        return 'Error: No data for Author'
-    elif content['Name'] is None:
-        return 'Error: No data for Name'
-    elif content['Count'] is None:
-        return 'Error: No data for Count'
-    else:
-        change = int(content['Count'])
-        res = db.change_stock(content['Author'], -change)
-        return res
-
-
-@app.route('/book/count?Action=COUNT&<Name>&<Author>', methods=['GET'])
-def count(Name, Author):
-    res = db.get_count(Name)
-    return res
-
-
-if __name__ == '__main__':
-    db = MongoDB.MongoDB()
-    hostname = socket.gethostname()
-    IPAddr = socket.gethostbyname(hostname + ".local")
-    logging.basicConfig(level=logging.DEBUG)
-    if len(sys.argv) > 1:
-        assert sys.argv[1:] == ['--debug']
-        logging.getLogger('zeroconf').setLevel(logging.DEBUG)
-
-    desc = {'path': '/~paulsm/'}
-
-    info = ServiceInfo("_http._tcp.local.",
-                       "STORAGE._http._tcp.local.",
-                       socket.inet_aton(str(IPAddr)), 5000, 0, 0,
-                       desc, "ash-2.local.")
-
-    zeroconf = Zeroconf()
-    print("Registration of a service, press Ctrl-C to exit...")
-    zeroconf.register_service(info)
-    print("Ready for API calls")
-
-    # Create clean exit signal
-    signal.signal(signal.SIGINT, signal_handler)
-
-    app.run(host='0.0.0.0')
+    def get_count(self, book):
+        try:
+            found_book = self.collection.find_one(book)
+            old_stock = found_book['stock']
+        except:
+            return {'Msg': 'Error: Book doesn\'t exist. Please add book first'}
+        return {'Msg': 'OK: ' + str(old_stock) + ' books in stock'}
