@@ -25,6 +25,7 @@ class MyListener (object):
             Name = info.name
         except:
             pass
+        print('Source Name: ' + Name)
         if(Name == "LED._http._tcp.local."):
             LED_IP = socket.inet_ntoa(cast(bytes, info.address))
         elif(Name == "STORAGE.http._tcp.local."):
