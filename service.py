@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, json
 import subprocess
 import os
-#import AuthDB
+import AuthDB
 from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 from time import sleep
 import logging
