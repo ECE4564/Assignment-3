@@ -54,6 +54,7 @@ def upload_LED():
     try:
         username = request.json.get('username')
         password = request.json.get('password')
+        print('User: ' + username + ' Password: ' + password)
         bashfile = request.files['file']
         filename = bashfile.filename
     except:
