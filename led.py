@@ -68,7 +68,7 @@ def info():
     led_vals["blue"] = led.blue_int
     led_vals["status"] = led.status
 
-    return jsonify({'Content': led_vals})
+    return led_vals
 
 
 if __name__ == '__main__':
