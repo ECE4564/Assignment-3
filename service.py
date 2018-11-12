@@ -59,9 +59,8 @@ def upload_LED():
     
     try:
         auth = request.authorization
-        #print('User: ' + auth.username + ' Password: ' + auth.password)
         found = auth_db.find_user(auth)
-        print('Found: ' + found + ' User: ' + auth.username + ' Password: ' + auth.password)
+        print('Found: ' + str(found) + ' User: ' + auth.username + ' Password: ' + auth.password)
         if found:
             bashfile = request.files['file']
             filename = bashfile.filename
@@ -88,8 +87,8 @@ def upload_STORE():
     
     try:
         auth = request.authorization
-        #print('User: ' + auth.username + ' Password: ' + auth.password)
         found = auth_db.find_user(auth)
+        print('Found: ' + str(found) + ' User: ' + auth.username + ' Password: ' + auth.password)
         if found:
             bashfile = request.files['file']
             filename = bashfile.filename
