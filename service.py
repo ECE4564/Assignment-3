@@ -10,22 +10,27 @@ import socket
 from typing import cast
 
 LED_IP = ""
+STORE_IP = ""
 
 class MyListener (object):
     def remove_service(self, zeroconf, type, name):
         print("Service%sremoved" % (name,))
     def add_service(self, zeroconf, type, name):
+        # Global variables used for zeroconf
         global LED_IP
+        global STORE_IP
+        
         info = zeroconf.get_service_info(type, name)
         try:
             Name = info.name
         except:
             pass
-        print(Name)
         if(Name == "LED._http._tcp.local."):
             LED_IP = socket.inet_ntoa(cast(bytes, info.address))
-            print(LED_IP + '\n')
-            zeroconf.close()
+        elif(Name == "STORAGE.http._tcp.local."):
+            STORE_IP = socket.inet_ntoa(cast(bytes, info.address))
+            if LED_IP != "":
+                zeroconf.close()
 
 app = Flask(__name__)
 
@@ -42,7 +47,10 @@ def add():
 
 @app.route('/upload/led', methods=['POST'])
 def upload_LED():
+    # Global variables used for zeroconf
     global LED_IP
+    global STORE_IP
+    
     try:
         bashfile = request.files['file']
         filename = bashfile.filename
@@ -52,17 +60,19 @@ def upload_LED():
     # Saving file
     bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    print("Running " + filename + "...")
-    # Need to change IP to zeroconf obtained IP
-    print(str(LED_IP) + '\n')
+    print("Running " + filename + " using IP: " + LED_IP + "..." )
     subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), str(LED_IP)])
 
     # Return message and code
-    return "File successfully uploaded."
+    return "LED file successfully uploaded."
 
 
 @app.route('/upload/storage', methods=['POST'])
 def upload_STORE():
+    # Global variables used for zeroconf
+    global LED_IP
+    global STORE_IP
+    
     try:
         bashfile = request.files['file']
         filename = bashfile.filename
@@ -72,12 +82,11 @@ def upload_STORE():
     # Saving file
     bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    print("Running " + filename + "...")
-    # Need to change IP to zeroconf obtained IP
-    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), "192.168.1.36"])
+    print("Running " + filename + " using IP: " + STORE_IP + "..." )
+    subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), str(STORE_IP)])
 
     # Return message and code
-    return "File successfully uploaded."
+    return "Storage file successfully uploaded."
 
 
 if __name__ == '__main__':
@@ -87,12 +96,3 @@ if __name__ == '__main__':
     browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
 
     app.run(host= '0.0.0.0', port=5002)
-    
-#     try:
-#         while True:
-#             sleep(0.1)
-#     except KeyboardInterrupt:
-#         pass
-#     finally:
-#         zeroconf.close()
-
