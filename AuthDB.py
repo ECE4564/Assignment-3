@@ -1,5 +1,6 @@
 import pymongo
 
+
 class AuthDB:
 
     def __init__(self):
@@ -18,8 +19,10 @@ class AuthDB:
 
     def find_user(self, data):
         try:
+            print('in find user')
             res = self.collection.find_one(data)
             if res['username'] == data['username'] and res['password'] == data['password']:
+                print('returning true')
                 return True
             else:
                 return False
