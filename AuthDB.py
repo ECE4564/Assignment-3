@@ -14,4 +14,10 @@ class AuthDB:
             post_id = self.collection.insert_one(data).inserted_id
         except:
             return 'Error'
-        return 'Success'
+        return 'Successfully added ' + str(data)
+
+    def find_user(self, data):
+        try:
+            return str(self.collection.find_one(data))
+        except:
+            return 'Exception caught when attempting to find user'
