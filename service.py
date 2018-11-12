@@ -95,4 +95,4 @@ if __name__ == '__main__':
     listener = MyListener()
     browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
 
-    app.run(host= '0.0.0.0', port=5002)
+    app.run(host= '0.0.0.0')
