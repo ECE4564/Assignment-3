@@ -68,13 +68,13 @@ def info():
     led_vals["blue"] = led.blue_int
     led_vals["status"] = led.status
 
-    return jsonify({'Content': led_vals})
+    return jsonify(led_vals)
 
 
 if __name__ == '__main__':
     led = LED_PWM.LED_PWM()
     hostname = socket.gethostname()  
-    IPAddr = socket.gethostbyname(hostname)
+    IPAddr = socket.gethostbyname(hostname + ".local")
     logging.basicConfig(level=logging.DEBUG)
     if len(sys.argv) > 1:
         assert sys.argv[1:] == ['--debug']
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     info = ServiceInfo("_http._tcp.local.",
                        "LED._http._tcp.local.",
-                       socket.inet_aton(str(IPAddr)), 80, 0, 0,
+                       socket.inet_aton(str(IPAddr)), 5000, 0, 0,
                        desc, "ash-2.local.")
 
     zeroconf = Zeroconf()
