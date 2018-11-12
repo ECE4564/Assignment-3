@@ -96,9 +96,6 @@ def upload_STORE():
         else:
             return 'User not found.'
 
-    # Saving file
-    bashfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
     print("Running " + filename + " using IP: " + STORE_IP + "..." )
     subprocess.Popen(["bash", os.path.join(app.config['UPLOAD_FOLDER'], filename), str(STORE_IP)])
 
