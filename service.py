@@ -36,4 +36,4 @@ def upload_LED():
 
 if __name__ == '__main__':
     #auth = AuthDB()
-    app.run(debug=True)
+    app.run(host= '0.0.0.0', port=5002)
