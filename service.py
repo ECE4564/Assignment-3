@@ -82,14 +82,14 @@ if __name__ == '__main__':
     zeroconf = Zeroconf()
     listener = MyListener()
     browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
-    
-    try:
-        while True:
-            sleep(0.1)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        zeroconf.close()
 
     app.run(host= '0.0.0.0', port=5002)
+    
+#     try:
+#         while True:
+#             sleep(0.1)
+#     except KeyboardInterrupt:
+#         pass
+#     finally:
+#         zeroconf.close()
 
