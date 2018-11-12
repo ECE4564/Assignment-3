@@ -74,7 +74,7 @@ def info():
 if __name__ == '__main__':
     led = LED_PWM.LED_PWM()
     hostname = socket.gethostname()  
-    IPAddr = socket.gethostbyname(hostname)
+    IPAddr = socket.gethostbyname(hostname + ".local")
     logging.basicConfig(level=logging.DEBUG)
     if len(sys.argv) > 1:
         assert sys.argv[1:] == ['--debug']
