@@ -33,7 +33,7 @@ class MyListener (object):
 app = Flask(__name__)
 
 # Upload directory
-app.config['UPLOAD_FOLDER'] = 'uploads/'
+app.config['UPLOAD_FOLDER'] = ''
 
 
 @app.route('/add_user', methods=['POST'])
