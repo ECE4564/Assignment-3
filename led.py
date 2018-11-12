@@ -9,7 +9,6 @@ import signal
 from time import sleep
 
 from zeroconf import ServiceInfo, Zeroconf 
-from requests import get
 
 app = Flask(__name__)
 
@@ -76,8 +75,6 @@ if __name__ == '__main__':
     led = LED_PWM.LED_PWM()
     hostname = socket.gethostname()  
     IPAddr = socket.gethostbyname(hostname)
-    ip = get('https://localhost').text
-    print('IP: ' + ip)
     logging.basicConfig(level=logging.DEBUG)
     if len(sys.argv) > 1:
         assert sys.argv[1:] == ['--debug']
