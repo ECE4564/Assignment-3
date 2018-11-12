@@ -85,6 +85,8 @@ def upload_STORE():
     global LED_IP
     global STORE_IP
     
+    print('Store IP: ' + STORE_IP)
+    
     try:
         auth = request.authorization
         found = auth_db.find_user(auth)
