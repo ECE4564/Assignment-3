@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     info = ServiceInfo("_http._tcp.local.",
                        "LED._http._tcp.local.",
-                       socket.inet_aton("127.0.0.1"), 5000, 0, 0,
+                       socket.inet_aton(str(IPAddr)), 5000, 0, 0,
                        desc, "ash-2.local.")
 
     zeroconf = Zeroconf()
